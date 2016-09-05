@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Exercício Litteris</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Exercício Litteris">
+  <meta name="author" content="Luis Antonio">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Exercício Litteris</h1>
+    <h2></h2>
+    <p>Luis Antonio<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <article data-timings="">
+    <!-- font-size: 0.7em; -- Inserido no arquivo slidify.css do framework io2012
+para diminuir o tamanho do caption da tabela  -->
+
+<!-- Limit image width and height -->
+
+<style type='text/css'>
+img {
+    max-height: 500px;
+    max-width: 1080px;
+    }
+</style>
+
+<!-- Center image on slide -->
+
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+
+<script type='text/javascript'>
+$(function() {
+    $("p:has(img)").addClass('centered');
+});
+</script>
+
+<h2>Questões</h2>
+
+<ol>
+<li>Quais gêneros tem na média histórica os maiores ratings</li>
+<li>Quais gêneros obtiveram a maior queda e crescimento na média com o passar do tempo </li>
+<li>Existe alguma relação entre users? (e.g. users dão notas mais altas para um gênero dão notas mais baixas para outro gênero; dica: você pode tentar segmentar users)</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>Os dados utilizados para responder as questões estão no link abaixo. <a href="http://grouplens.org/datasets/movielens/20m/">http://grouplens.org/datasets/movielens/20m/</a></p>
+
+<p>A partir dele foram retirados dois arquivos úteis, e foram criados dois data frames, <code>movies</code> e <code>ratings</code>. Abaixo vemos parte deles.</p>
+
+<table>
+<caption>Head of the Movies Data Frame</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> movieId </th>
+   <th style="text-align:left;"> title </th>
+   <th style="text-align:left;"> genres </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> Toy Story (1995) </td>
+   <td style="text-align:left;"> Adventure|Animation|Children|Comedy|Fantasy </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> Jumanji (1995) </td>
+   <td style="text-align:left;"> Adventure|Children|Fantasy </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> Grumpier Old Men (1995) </td>
+   <td style="text-align:left;"> Comedy|Romance </td>
+  </tr>
+</tbody>
+</table>
+
+<table>
+<caption>Head of the Ratings Data Frame</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> userId </th>
+   <th style="text-align:right;"> movieId </th>
+   <th style="text-align:right;"> rating </th>
+   <th style="text-align:right;"> timestamp </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:right;"> 1112486027 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 29 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:right;"> 1112484676 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 32 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:right;"> 1112484819 </td>
+  </tr>
+</tbody>
+</table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Processamento dos data frames</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Como podemos ver pelo campo <code>Timestamp</code> a data está no formato <code>POSIXct</code>, por isso convertemos ela para o calendário Gregoriano. Além disso, extraímos somente o ano de cada data.</p>
+
+<table>
+<caption>Ratings com a data formatada</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> userId </th>
+   <th style="text-align:right;"> movieId </th>
+   <th style="text-align:right;"> rating </th>
+   <th style="text-align:left;"> timestamp </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:left;"> 2005 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 29 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:left;"> 2005 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 32 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:left;"> 2005 </td>
+  </tr>
+</tbody>
+</table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>Como alguns filmes possuem vários gêneros, separamos os diferentes gêneros em diferentes linhas.</p>
+
+<table>
+<caption>Movies com gêneros separados</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> movieId </th>
+   <th style="text-align:left;"> title </th>
+   <th style="text-align:left;"> genres </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> Toy Story (1995) </td>
+   <td style="text-align:left;"> Adventure </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> Toy Story (1995) </td>
+   <td style="text-align:left;"> Animation </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> Toy Story (1995) </td>
+   <td style="text-align:left;"> Children </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> Toy Story (1995) </td>
+   <td style="text-align:left;"> Comedy </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> Toy Story (1995) </td>
+   <td style="text-align:left;"> Fantasy </td>
+  </tr>
+</tbody>
+</table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>Para obtermos os gêneros e seus respectivos ratings criamos um único data frame fazendo inner join de <code>ratings</code> e <code>movies</code>, usando o campo <code>movieId</code>. </p>
+
+<table>
+<caption>Data frame completo</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> userId </th>
+   <th style="text-align:right;"> movieId </th>
+   <th style="text-align:right;"> rating </th>
+   <th style="text-align:left;"> timestamp </th>
+   <th style="text-align:left;"> title </th>
+   <th style="text-align:left;"> genres </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:left;"> 2005 </td>
+   <td style="text-align:left;"> Jumanji (1995) </td>
+   <td style="text-align:left;"> Adventure </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:left;"> 2005 </td>
+   <td style="text-align:left;"> Jumanji (1995) </td>
+   <td style="text-align:left;"> Children </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:left;"> 2005 </td>
+   <td style="text-align:left;"> Jumanji (1995) </td>
+   <td style="text-align:left;"> Fantasy </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 29 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:left;"> 2005 </td>
+   <td style="text-align:left;"> City of Lost Children, The (Cité des enfants perdus, La) (1995) </td>
+   <td style="text-align:left;"> Adventure </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 29 </td>
+   <td style="text-align:right;"> 3.5 </td>
+   <td style="text-align:left;"> 2005 </td>
+   <td style="text-align:left;"> City of Lost Children, The (Cité des enfants perdus, La) (1995) </td>
+   <td style="text-align:left;"> Drama </td>
+  </tr>
+</tbody>
+</table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Outliers</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Foi excluído o ano de 1995, pois existem apenas 4 filmes nesse ano.  </p>
+
+<table>
+<caption>Filmes com ratings em 1995</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> movieId </th>
+   <th style="text-align:left;"> title </th>
+   <th style="text-align:left;"> genres </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 21 </td>
+   <td style="text-align:left;"> Get Shorty (1995) </td>
+   <td style="text-align:left;"> Comedy|Crime|Thriller </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 47 </td>
+   <td style="text-align:left;"> Seven (a.k.a. Se7en) (1995) </td>
+   <td style="text-align:left;"> Mystery|Thriller </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1079 </td>
+   <td style="text-align:left;"> Fish Called Wanda, A (1988) </td>
+   <td style="text-align:left;"> Comedy|Crime </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 1176 </td>
+   <td style="text-align:left;"> Double Life of Veronique, The (Double Vie de Véronique, La) (1991) </td>
+   <td style="text-align:left;"> Drama|Fantasy|Romance </td>
+  </tr>
+</tbody>
+</table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Questão 1</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Agrupando a média dos ratings por gênero e tempo.</p>
+
+<p><img src="plots/q1.png" alt="Média dos ratings por gênero e tempo"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>Analisando as maiores médias, abaixo vemos os gêneros com maiores ratings.</p>
+
+<table>
+<caption>Maiores médias</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> genres </th>
+   <th style="text-align:right;"> rating </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Film-Noir </td>
+   <td style="text-align:right;"> 3.911992 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> War </td>
+   <td style="text-align:right;"> 3.803397 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Documentary </td>
+   <td style="text-align:right;"> 3.733566 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> IMAX </td>
+   <td style="text-align:right;"> 3.683389 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Crime </td>
+   <td style="text-align:right;"> 3.682062 </td>
+  </tr>
+</tbody>
+</table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Questão 2</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Para analisar os crescimentos e quedas na média, o data frame foi dividido em 2 períodos (análise visual de crescimento e queda). Mesmo acreditando que deve existir uma maneira melhor... </p>
+
+<pre><code class="r">cresc &lt;- tout %&gt;% filter(timestamp %in% c(2005:2013) &amp; genres != &quot;(no genres listed)&quot;)
+queda &lt;- tout %&gt;% filter(timestamp %in% c(1999:2005) &amp; genres != &quot;(no genres listed)&quot;)
+</code></pre>
+
+<p>A partir dessa divisão pensei em duas maneiras para descobrir os gêneros com maiores quedas e os com maiores crescimentos. A primeira seria analisando o coeficiente angular da regressão linear.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>Abaixo temos os gêneros que tiveram os maiores crescimentos e quedas na média.</p>
+
+<table><tr valign="top"><td><table cellpadding="3">
+<caption>Crescimento</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> genres </th>
+   <th style="text-align:right;"> slope </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Children </td>
+   <td style="text-align:right;"> 0.0487146 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Western </td>
+   <td style="text-align:right;"> 0.0449657 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Sci-Fi </td>
+   <td style="text-align:right;"> 0.0429731 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Action </td>
+   <td style="text-align:right;"> 0.0398870 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Romance </td>
+   <td style="text-align:right;"> 0.0377789 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> IMAX </td>
+   <td style="text-align:right;"> 0.0372127 </td>
+  </tr>
+</tbody>
+</table></td><td><table cellpadding="3">
+<caption>Queda</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> genres </th>
+   <th style="text-align:right;"> slope </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Western </td>
+   <td style="text-align:right;"> 0.0524497 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Adventure </td>
+   <td style="text-align:right;"> 0.0339880 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Animation </td>
+   <td style="text-align:right;"> 0.0337058 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Action </td>
+   <td style="text-align:right;"> 0.0206850 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Musical </td>
+   <td style="text-align:right;"> 0.0071989 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> IMAX </td>
+   <td style="text-align:right;"> 0.0031196 </td>
+  </tr>
+</tbody>
+</table></td></tr></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>E, a segunda, seria calcular a diferença entre o maior e o menor rating nesses períodos, por gênero. Para isso usei o pacote <code>sqldf</code>. Não gerou o mesmo resultado, a ordem não foi a mesma. Abaixo temos as respectivas tabelas de maiores crescimentos e quedas.</p>
+
+<table><tr valign="top"><td><table cellpadding="3">
+<caption>Crescimento</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> genres </th>
+   <th style="text-align:right;"> diff </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Sci-Fi </td>
+   <td style="text-align:right;"> 0.3236401 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Western </td>
+   <td style="text-align:right;"> 0.2936069 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Action </td>
+   <td style="text-align:right;"> 0.2905666 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Children </td>
+   <td style="text-align:right;"> 0.2610443 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> IMAX </td>
+   <td style="text-align:right;"> 0.2497089 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Thriller </td>
+   <td style="text-align:right;"> 0.2462954 </td>
+  </tr>
+</tbody>
+</table></td><td><table cellpadding="3">
+<caption>Queda</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> genres </th>
+   <th style="text-align:right;"> diff </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> IMAX </td>
+   <td style="text-align:right;"> 0.3660882 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> War </td>
+   <td style="text-align:right;"> 0.2755366 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Romance </td>
+   <td style="text-align:right;"> 0.2597686 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Documentary </td>
+   <td style="text-align:right;"> 0.2231839 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Comedy </td>
+   <td style="text-align:right;"> 0.2220157 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Musical </td>
+   <td style="text-align:right;"> 0.2194429 </td>
+  </tr>
+</tbody>
+</table></td></tr></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Questão 3</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Para realizarmos o gráfico com a correlação entre os gêneros vamos, primeiro, verificar o número de vezes que um usuário forneceu determinado rate para um determinado gênero e a média, agrupando por <code>(user,genre)</code>.</p>
+
+<p>Depois, padronizar a coluna de rating, por usuário (alguns usuários que veem mais filmes que outros).</p>
+
+<p>Passamos agora os gênero para colunas para fazermos a correlação. Temos um exemplo abaixo, com as 6 primeiras colunas.</p>
+
+<table>
+<caption>Gêneros nas colunas</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> userId </th>
+   <th style="text-align:right;"> Action </th>
+   <th style="text-align:right;"> Adventure </th>
+   <th style="text-align:right;"> Animation </th>
+   <th style="text-align:right;"> Children </th>
+   <th style="text-align:right;"> Comedy </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.9108773 </td>
+   <td style="text-align:right;"> 1.222508 </td>
+   <td style="text-align:right;"> -0.9810469 </td>
+   <td style="text-align:right;"> -0.4361182 </td>
+   <td style="text-align:right;"> 1.0028340 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2.1958028 </td>
+   <td style="text-align:right;"> 1.978503 </td>
+   <td style="text-align:right;"> -0.7739635 </td>
+   <td style="text-align:right;"> -0.7739635 </td>
+   <td style="text-align:right;"> -0.2850385 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 0.9943531 </td>
+   <td style="text-align:right;"> 1.109202 </td>
+   <td style="text-align:right;"> -0.9287968 </td>
+   <td style="text-align:right;"> -0.6210328 </td>
+   <td style="text-align:right;"> 1.1092016 </td>
+  </tr>
+</tbody>
+</table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>Abaixo vemos o gráfico da correlação entre os gêneros.</p>
+
+<p><img src="plots/q3.png" alt="Correlação entre os gêneros"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>O gráfico foi ordenado pelo primeiro componente principal e foi adicionado um <code>X</code> para designar valores de significância inferiores a <code>1%</code>.</p>
+
+<p>Vemos que, pessoas que gostam de gêneros como Aventura e/ou Ação e/ou Sci-Fi, não gostam de Dramas e/ou Filmes-Noir. E, quem gosta de Filmes-Noir e/ou Drama, não gosta de Aventura e Ação. </p>
+
+<p>Em menor escala, quem gosta de Thriller gosta de Ação e não gosta de Musical ou Romance, quem gosta de Animação gosta de filmes de criança, quem gosta Musical também gosta de filmes de criança e Romance, mas não gosta de filmes de Ação ou Thriller.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='NA'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='NA'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Processamento dos data frames'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='NA'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='NA'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='Outliers'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Questão 1'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='NA'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Questão 2'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='NA'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='NA'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Questão 3'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='NA'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='NA'>
+         14
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
